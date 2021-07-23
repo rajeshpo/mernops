@@ -1,23 +1,41 @@
-import logo from './logo.svg';
-import './App.css';
+import Create from "./Create";
+import Axios from "axios";
+import { useEffect, useState } from "react";
+import Cards from "./Cards";
 
 function App() {
+  const [data, setData] = useState([]);
+  const [search,setSearch]=useState("")
+  useEffect(() => {
+    Axios.get("https://mernops.herokuapp.com/getUsers").then((res) => setData(res.data));
+  }, []);
+ 
+const filteredUsers=data.filter(user=>{
+  let searchvalue=user.name+" "+user.age+" "+user.city+" "+user.country;
+  return searchvalue.toLowerCase().includes(search.toLowerCase())
+})
+ 
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Create />
+     <form>
+     <input placeholder="Search here"  className="form-control" onChange={(e)=>{ 
+        setSearch(e.target.value)}}/>
+  
+     </form>
+     {filteredUsers.map((value) => (
+       
+        <div>
+        {console.log(value)}
+        <Cards key={value.name}
+          name={value.name}
+          age={value.age}
+          city={value.city}
+          country={value.country}
+          id={value._id}
+        />
+        </div>
+      ))}
     </div>
   );
 }
